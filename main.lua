@@ -3,30 +3,108 @@ require "/lib/json/json"
 gamestate = require "/lib/hump/gamestate"
 
 map_editor= {}
-test = {}
+ui = {}
 
 function love.load()
 	gamestate.registerEvents()
-	gamestate.switch(test)
+	gamestate.switch(ui)
 end
 
-------------------------------test---------------------------------------------
+------------------------------ui---------------------------------------------
 
-function test:init()
-	
+function ui:init()
+	love.graphics.setBackgroundColor( 200, 200, 200 )
 	data={}
 	data = json.decode(love.filesystem.read( "data/data.json", nil ))
-
-end
-
-function test:keypressed(key)
-    if key == "q" then
-		save = json.encode(data)
-		love.filesystem.remove( "data.json" )
-		love.filesystem.write( "data.json", save)
-		love.event.push("quit")
+	require "/lib/Gui/"
+	
+	frame = loveframes.Create("frame")
+	frame:SetSize(500, 300)
+	frame:Center()
+	frame:SetName("Frame 1")
+	
+	multichoice = loveframes.Create("multichoice",frame)
+	multichoice:SetPos(5, 30)
+	
+	
+	for i=1,#data.pnj do
+		multichoice :AddChoice(i)
 	end
+	
+	multichoice:SetChoice("1")
+	skin = loveframes.Create("image",frame)
+	skin:SetImage("icone.png")
+	skin:SetPos(5, 60)
+	
+	text_name = loveframes.Create("text",frame)
+	text_name:SetPos(75, 90)
+	text_name:SetMaxWidth(100)
+	
+	button_name = loveframes.Create("button",frame)
+	button_name:SetSize(100, 15)
+	button_name:SetPos(350, 90)
+	button_name:SetText("edit")
+	function button_name:OnClick()
+		print("name was clicked!")
+	end
+
+	
+	text_skin = loveframes.Create("text",frame)
+	text_skin:SetPos(75, 110)
+	text_skin:SetMaxWidth(100)
+	
+	button_skin = loveframes.Create("button",frame)
+	button_skin:SetSize(100, 15)
+	button_skin:SetPos(350, 110)
+	button_skin:SetText("edit")
+	function button_skin:OnClick()
+		print("skin was clicked!")
+	end
+	
+	text_str = loveframes.Create("text",frame)
+	text_str:SetPos(75, 130)
+	text_str:SetMaxWidth(100)
+
 end
+
+function ui:update(dt)
+
+	nb = tonumber(multichoice:GetValue())
+	skin:SetImage("/textures/64/"..data.pnj[nb].skin)
+	text_name:SetText("Name : "..data.pnj[nb].name)
+	text_skin:SetText("Skin : "..data.pnj[nb].skin)
+	text_str:SetText("talk str :"..data.pnj[nb].talk_str)
+
+	loveframes.update(dt)
+end
+
+function ui.draw()
+	loveframes.draw()
+end
+
+function ui:mousepressed(x, y, button)
+	loveframes.mousepressed(x, y, button)
+end
+
+function ui:mousereleased(x, y, button)
+	loveframes.mousereleased(x, y, button)
+end
+
+
+function ui:keypressed(key)
+    -- if key == "q" then
+		-- save = json.encode(data)
+		-- love.filesystem.remove( "data.json" )
+		-- love.filesystem.write( "data.json", save)
+		-- love.event.push("quit")
+	-- end
+	loveframes.keypressed(key, unicode)
+end
+
+function ui:keyreleased(key)
+	loveframes.keyreleased(key)
+end
+
 
 --------------------------Map editor----------------------------------------------
 	
