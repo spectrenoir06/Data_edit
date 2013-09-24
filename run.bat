@@ -1,0 +1,1 @@
+lua edit.lua .data.json
